@@ -1,0 +1,123 @@
+
+
+dependencyResolutionManagement {
+
+
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+
+    repositories {
+        google()
+        mavenCentral()
+        // Source - https://stackoverflow.com/a
+// Posted by Manzur Alahi, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-01-26, License - CC BY-SA 4.0
+
+        // Source - https://stackoverflow.com/a
+// Posted by PrzemekTom
+// Retrieved 2026-01-26, License - CC BY-SA 4.0
+
+        maven {
+            url 'https://storage.googleapis.com/download.flutter.io'
+        }
+
+
+
+        maven {
+            url = uri("https://jfrog.anythinktech.com/artifactory/overseas_sdk")
+        }
+
+        //Maio
+        maven {
+            url = uri("https://imobile-maio.github.io/maven")
+        }
+
+        //Nend
+//        maven {
+//            url = uri("https://fan-adn.github.io/nendSDK-Android-lib/library")
+//        }
+
+        //YSO Network
+//        maven {
+//            url = uri("https://ysonetwork.s3.eu-west-3.amazonaws.com/sdk/android")
+//        }
+//
+//        //PubMatic
+//        maven {
+//            url = uri("https://repo.pubmatic.com/artifactory/public-repos")
+//        }
+
+        //Ironsource
+        maven {
+            url = uri("https://android-sdk.is.com/")
+        }
+
+//        //Tapjoy
+//        maven {
+//            url = uri("https://sdk.tapjoy.com/")
+//        }
+
+        //Pubnative
+//        maven {
+//            url = uri("https://verve.jfrog.io/artifactory/verve-gradle-release")
+//        }
+//
+//
+//
+//        maven {
+//            url = uri("https://bitbucket.org/sdkcenter/sdkcenter/raw/release")
+//        }
+
+//        //Smaato
+//        maven {
+//            url = uri("https://s3.amazonaws.com/smaato-sdk-releases/")
+//        }
+
+        //Pangle
+        maven {
+            url = uri("https://artifact.bytedance.com/repository/pangle")
+        }
+
+//        //Huawei
+//        maven {
+//            url = uri("https://developer.huawei.com/repo/")
+//        }
+
+        //Mintegral
+        maven {
+            url = uri("https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea")
+        }
+
+//        //BidMachine
+//        maven {
+//            url = uri( "https://artifactory.bidmachine.io/bidmachine")
+//        }
+
+        //Chartboost
+        maven {
+            url = uri("https://cboost.jfrog.io/artifactory/chartboost-ads")
+        }
+        maven {
+            url =uri("https://cboost.jfrog.io/artifactory/chartboost-mediation")
+        }
+
+        //Ogury
+//        maven {
+//            url = uri("https://maven.ogury.co")
+//        }
+//
+//        //Appnext
+//        maven {
+//            url = uri("https://dl.appnext.com")
+//        }
+
+        maven {
+            url = uri("https://jfrog.anythinktech.com/artifactory/debugger")
+        }
+        mavenLocal()
+    }
+}
+
+
+
+
+rootProject.name = 'hyperbid_ads'
