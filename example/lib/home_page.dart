@@ -16,10 +16,19 @@ class _HomePageState extends State<HomePage> {
       body: ListView.builder(
         itemCount: 10,
         itemBuilder: (context, index) {
+          if ((index % 2 == 0)) {
+            return Container(
+              height: 400,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.amberAccent,
+              ),
+            );
+          }
           return HyperbidNativeAd(
             group: "home_native_$index",
             placementId: "kfc98a6c32d23a57",
-            typeAd: HBTypeAd.nativeSmall,
+            typeAd: HBTypeAd.nativeMedium,
           );
         },
       ),

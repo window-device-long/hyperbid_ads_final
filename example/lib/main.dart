@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MainPage());
+    return MaterialApp(showPerformanceOverlay: true, home: MainPage());
   }
 }
 
