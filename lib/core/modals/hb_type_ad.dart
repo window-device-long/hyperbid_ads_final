@@ -21,24 +21,25 @@ extension HBTypeAdSize on HBTypeAd {
   double get height {
     switch (this) {
       case HBTypeAd.nativeBanner:
-      case HBTypeAd.nativeCollapse:
-        return 80;
+        return 90;
 
       case HBTypeAd.nativeSmall:
-        return 120;
+        return 50;
 
       case HBTypeAd.native:
         return 160;
 
       case HBTypeAd.nativeMedium:
-      case HBTypeAd.nativeMediumCollapse:
         return 250;
+      case HBTypeAd.nativeCollapse:
+      case HBTypeAd.nativeMediumCollapse:
+        return 50;
 
       case HBTypeAd.nativeFull:
-        return 420; // kiểu TikTok full media + overlay
+        return double.infinity;
 
       default:
-        return 160;
+        return 50;
     }
   }
 

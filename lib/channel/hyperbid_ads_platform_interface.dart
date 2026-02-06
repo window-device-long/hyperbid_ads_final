@@ -23,7 +23,39 @@ abstract class HyperbidAdsPlatform extends PlatformInterface {
   //   _instance = instance;
   // }
 
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+  static HyperbidAdsPlatform _instance = MethodChannelHyperbidAds();
+
+  static HyperbidAdsPlatform get instance => _instance;
+
+  static set instance(HyperbidAdsPlatform instance) {
+    PlatformInterface.verify(instance, _token);
+    _instance = instance;
   }
+
+  // ================= SDK =================
+  Future<void> initSDK({
+    required String appId,
+    required String appKey,
+    String? userId,
+  });
+
+  // ================= App Open =================
+  Future<void> initAppOpen(String placementId);
+  Future<void> showAppOpen();
+
+  // ================= Interstitial =================
+  Future<void> initInterstitial(String placementId);
+  Future<void> showInterstitial({String? screen});
+  Future<bool> isInterstitialReady();
+
+  // ================= Reward =================
+  Future<void> initReward(String placementId);
+  Future<void> showReward({String? screen});
+  Future<bool> isRewardReady();
+
+  // ================= Native =================
+  Future<void> reloadNativeActive(String viewId);
+
+  // ================= Lifecycle =================
+  Stream<Map<String, dynamic>> get lifecycleStream;
 }

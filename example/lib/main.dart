@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:hyperbid_ads/controller/HyperAdsController.dart';
 import 'package:hyperbid_ads/views/HyperBidBanner.dart';
-import 'package:hyperbid_ads_example/home_page.dart';
+import 'package:hyperbid_ads/views/hyperbid_nativefull_inter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,17 +58,43 @@ class MainPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Plugin example app')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const HomePage()));
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => HyperbidFullscreenAdsFlow(
+              group: "home",
+              interPlacementId: "k3f32c004b923390",
+              nativePlacementId: "kfc98a6c32d23a57",
+
+              onFinished: () => Navigator.pop(context),
+              screen: "Home",
+            )),
+          );
         },
       ),
-      body: Center(
-        child: HyperBidBanner(
-          name: "home_banner",
-          placementId: "kd945c8f112cd7b8",
-          type: "banner",
-        ),
+      body: Column(
+        children: [
+          TextButton(
+            onPressed: () {
+              HyperAdsController.initInterstitial("k3f32c004b923390");
+              HyperAdsController.showInterstitial();
+            },
+            child: Text("Interstitial"),
+          ),
+          TextButton(
+            onPressed: () {
+              HyperAdsController.initReward("kfcbe7867652599a");
+              HyperAdsController.showReward();
+            },
+            child: Text("Reward"),
+          ),
+          SizedBox(
+            height: 90,
+            child: HyperBidBanner(
+              name: "home_banner",
+              placementId: "kd945c8f112cd7b8",
+              type: "banner",
+            ),
+          ),
+        ],
       ),
     );
   }
