@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-enum NativeAdState { loading, ready, failed }
+enum NativeAdState { ready, failed }
 
 class NativeAdStateStore {
   NativeAdStateStore._();
@@ -11,7 +11,7 @@ class NativeAdStateStore {
   ValueNotifier<NativeAdState> watch(String viewId) {
     return _states.putIfAbsent(
       viewId,
-      () => ValueNotifier(NativeAdState.loading),
+      () => ValueNotifier(NativeAdState.ready),
     );
   }
 

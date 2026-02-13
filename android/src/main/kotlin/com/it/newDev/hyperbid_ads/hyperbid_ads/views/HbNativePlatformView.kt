@@ -20,7 +20,7 @@ class HbNativePlatformView(
     placementId: String,
     type: HBTypeAd,
     args: Map<String, Any>
-) : PlatformView  {
+) : PlatformView {
 
     private val container = FrameLayout(context)
     private val controller: HBAdsNativeController
@@ -37,8 +37,8 @@ class HbNativePlatformView(
         )
         _viewId = args["viewId"] as String?
 
-        controller = HBAdsNativeController(activity, adUnit, container)
-        controller.setStateListener(object : NativeAdStateListener{
+        controller = HBAdsNativeController(activity, adUnit, container, _viewId!!)
+        controller.setStateListener(object : NativeAdStateListener {
             override fun onNativeReady(viewId: String) {
                 HBAdsManager.dispatchNativeState(
                     viewId = viewId,

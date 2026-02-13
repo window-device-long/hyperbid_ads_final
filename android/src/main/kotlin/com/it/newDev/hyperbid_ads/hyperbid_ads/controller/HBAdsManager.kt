@@ -17,7 +17,6 @@ object HBAdsManager {
     private var lifecycleEvent: ((Map<String, Any>) -> Unit)? = null
 
 
-
     fun setLifecycleListener(listener: (Map<String, Any>) -> Unit) {
         lifecycleEvent = listener
     }
@@ -118,10 +117,12 @@ object HBAdsManager {
         appOpenController?.show()
     }
 
+
     fun destroyAppOpen() {
         appOpenController?.destroy()
         appOpenController = null
     }
+
     fun showReward() {
         rewardController?.show()
     }
@@ -145,6 +146,10 @@ object HBAdsManager {
 
     fun isInterstitialReady(): Boolean {
         return interstitialController?.isReady() == true
+    }
+
+    fun isRewardReady(): Boolean {
+        return rewardController?.isReady() == true
     }
 
 

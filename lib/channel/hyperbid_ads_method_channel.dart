@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:hyperbid_ads/channel/HyperbidAdsChannels.dart';
 
-import '../core/services/wrapper/AdsRemoteConfig.dart';
 import 'hyperbid_ads_platform_interface.dart';
 
 /// An implementation of [HyperbidAdsPlatform] that uses method channels.
@@ -9,9 +11,9 @@ class MethodChannelHyperbidAds extends HyperbidAdsPlatform {
   @visibleForTesting
   final MethodChannel methodChannel = const MethodChannel('hyperbid_ads');
 
-  final MethodChannel _command = const MethodChannel('hyperbid_ads/command');
+  final MethodChannel _command = HyperbidAdsChannels.command;
 
-  final EventChannel _lifecycle = const EventChannel('hyperbid_ads/lifecycle');
+  final EventChannel _lifecycle = HyperbidAdsChannels.lifecycle;
 
   // ================= SDK =================
 
@@ -37,6 +39,9 @@ class MethodChannelHyperbidAds extends HyperbidAdsPlatform {
 
   @override
   Future<void> showAppOpen() {
+    // if (!AdsRemoteConfig.ca(screen: screen)) {
+    //   return Future.value();
+    // }
     return _command.invokeMethod('showAppOpen');
   }
 
@@ -51,9 +56,6 @@ class MethodChannelHyperbidAds extends HyperbidAdsPlatform {
 
   @override
   Future<void> showInterstitial({String? screen}) {
-    if (!AdsRemoteConfig.canShowInterstitial(screen: screen)) {
-      return Future.value();
-    }
     return _command.invokeMethod('showInterstitial');
   }
 
@@ -72,9 +74,6 @@ class MethodChannelHyperbidAds extends HyperbidAdsPlatform {
 
   @override
   Future<void> showReward({String? screen}) {
-    if (!AdsRemoteConfig.canShowReward(screen: screen)) {
-      return Future.value(false);
-    }
     return _command.invokeMethod('showReward');
   }
 

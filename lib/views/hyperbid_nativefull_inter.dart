@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:hyperbid_ads/channel/hyperbid_ads_platform_interface.dart';
-import 'package:hyperbid_ads/controller/HyperAdsController.dart';
+import 'package:hyperbid_ads/hyperbid_ads.dart';
 import 'package:hyperbid_ads/views/HyperBidNative.dart';
 import '../core/modals/hb_type_ad.dart';
 
@@ -49,10 +48,8 @@ class _HyperbidFullscreenAdsFlowState extends State<HyperbidFullscreenAdsFlow> {
   // ================= FLOW =================
 
   Future<void> _startFlow() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-
     setState(() => _state = _AdsFlowState.interstitial);
-    await HyperbidAdsPlatform.instance.showInterstitial(screen: widget.screen);
+    await HyperbidAds.showInterstitial(screen: widget.screen);
 
     _startNative1();
   }

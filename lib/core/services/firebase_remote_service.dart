@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
-
-import '../modals/hb_type_ad.dart';
+import 'package:flutter/services.dart';
 
 class RemoteConfigService {
   static final RemoteConfigService _instance = RemoteConfigService._internal();
@@ -15,14 +16,24 @@ class RemoteConfigService {
   Future<void> init() async {
     try {
       _remoteConfig = FirebaseRemoteConfig.instance;
+      // final jsonStr = await rootBundle.loadString('assets/remote_config.json');
+      //
+      // final Map<String, dynamic> defaults = json.decode(jsonStr);
+      //
+      // await _remoteConfig.setDefaults(defaults);
+
       await _remoteConfig.setConfigSettings(
         RemoteConfigSettings(
           fetchTimeout: const Duration(seconds: 10),
-          minimumFetchInterval: const Duration(seconds: 10),
+          minimumFetchInterval: kDebugMode
+              ? Duration.zero
+              : const Duration(hours: 12),
         ),
       );
 
-      bool check = await _remoteConfig.fetchAndActivate();
+      await _remoteConfig.fetch();
+      final check = await _remoteConfig.activate();
+
       debugPrint('✅ RemoteConfig fetched and activated: $check');
       print(
         "Remote Config Values: ${getString("remote_data", defaultValue: "default")}",
@@ -31,8 +42,6 @@ class RemoteConfigService {
       debugPrint('❌ RemoteConfig init error: $e');
     }
   }
-
-
 
   /// Kiểm tra key có tồn tại không
   bool hasKey(String key) {

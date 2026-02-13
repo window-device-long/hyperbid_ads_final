@@ -7,18 +7,18 @@ import com.it.newDev.hyperads.core.modals.entities.HBAdUnit
 import com.it.newDev.hyperads.core.modals.enums.HBSDKState
 import com.it.newDev.hyperads.core.modals.enums.HBTypeAd
 import com.it.newDev.hyperbid_ads.hyperbid_ads.HyperbidAdsPlugin.Companion.activity
+import com.it.newDev.hyperbid_ads.hyperbid_ads.controller.AppStateNotifier
 import com.it.newDev.hyperbid_ads.hyperbid_ads.controller.HBAdsControllerStore
 import com.it.newDev.hyperbid_ads.hyperbid_ads.controller.HBAdsManager
-import com.it.newDev.hyperbid_ads.hyperbid_ads.controller.HBAdsManager.sdkRevenueListener
 import com.it.newDev.hyperbid_ads.hyperbid_ads.factory.HbBannerViewFactory
 import com.it.newDev.hyperbid_ads.hyperbid_ads.factory.HbNativeViewFactory
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 
 
 class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -27,6 +27,9 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var lifecycleChannel: EventChannel
 
     private var lifecycleSink: EventChannel.EventSink? = null
+
+    private var appStateNotifier: AppStateNotifier? = null
+
     private lateinit var context: Context
 
     companion object {
@@ -94,6 +97,7 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             HbNativeViewFactory()
         )
 
+        appStateNotifier = AppStateNotifier(binding.binaryMessenger)
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -145,7 +149,7 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
 
             "isRewardReady" -> {
-                result.success(HBAdsManager.isInterstitialReady())
+                result.success(HBAdsManager.isRewardReady())
             }
 
 
@@ -276,5 +280,8 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         lifecycleSink = null
         commandChannel.setMethodCallHandler(null)
         HBAdsManager.detachRevenueListener()
+
+        appStateNotifier?.stop()
+        appStateNotifier = null
     }
 }

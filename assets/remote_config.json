@@ -1,0 +1,33 @@
+{
+  "ads_reward_enabled": false,
+  "ads_image_gen_reward_or_native_inter": false,
+
+  "ads_reward_screen": "{\"splash\":false,\"image_gen\":true,\"video_gen\":true,\"save_retry\":true,\"export\":true,\"unlock\":true,\"result_gen\":true,\"default\":true}",
+
+  "template_export": "[{\"id\":99,\"type\":\"Trending\",\"data\":[{\"id\":1,\"count_image\":1,\"thumbnail\":null,\"description\":\"Artistic image transformation with expressive color and texture.\",\"preview_gif\":\"https://ai-face.aiumaxsoft.com/final_template/painting/Water%20Color%202/output.gif\",\"base_url\":null,\"prompt_image\":null,\"title\":\"Water Color Trending\",\"audio\":\"https://painful-amber-li0bdh5tmv-yzzczm41ab.edgeone.dev/afro-beat-amapiano-seyra-453701.mp3\",\"output\":\"image\",\"coin_cost\":30,\"prompt\":\"Expressive watercolor with rich pigments and textured paper.\"}]}]",
+
+  "image_prompt": "[\"A highly detailed fantasy character portrait, dramatic lighting\",\"A futuristic robot standing in a neon cyberpunk city\",\"A magical girl with glowing eyes and floating particles, anime style\",\"A realistic cinematic landscape with mountains and clouds\",\"A cute cartoon character with pastel colors, illustration style\",\"A dark gothic castle under a stormy sky\",\"A surreal dreamlike scene with floating islands\",\"A detailed watercolor painting of a peaceful village\",\"A manga-style character illustration, clean line art\",\"A realistic studio portrait with soft lighting\"]",
+
+  "template_export_premium": "{\"id\":99,\"type\":\"Trending\",\"data\":[]}",
+
+  "app_live": false,
+
+  "ads_banner_enabled": true,
+  "ads_native_enabled": true,
+  "ads_interstitial_enabled": false,
+
+  "video_prompt": "[\"A cinematic slow-motion shot of a lone warrior walking through fog at sunrise\",\"A futuristic cyberpunk city with flying cars, cinematic camera movement\",\"A magical forest with glowing particles and floating lights\",\"A dragon flying above snowy mountains, epic wide shot\",\"A high-speed car chase through a neon-lit city at night\",\"A peaceful beach at sunset with gentle waves and palm trees\",\"Abstract liquid shapes morphing smoothly in vibrant colors\",\"A cozy coffee shop scene with warm morning sunlight\",\"A dramatic volcanic eruption with flowing lava\",\"A cute animal running in slow motion through nature\"]",
+
+  "ads_native_screens": "{\"splash\":false,\"image_gen\":true,\"main\":true,\"video_gen\":true,\"save_retry\":true,\"export\":true,\"unlock\":true,\"result_gen\":true,\"default\":true}",
+
+  "ads_interstitial_screen": "{\"splash\":false,\"image_gen\":true,\"video_gen\":true,\"save_retry\":true,\"export\":true,\"unlock\":true,\"result_gen\":true,\"default\":true}",
+
+  "Type_Ad": 0,
+  "restore_key": false,
+
+  "popular_export": "[{\"id\":5,\"count_image\":1,\"thumbnail\":null,\"description\":\"Sci-fi cinematic hero shot.\"}]",
+
+  "ads_banner_screens": "{\"splash\":false,\"image_gen\":true,\"video_gen\":true,\"save_retry\":true,\"export\":true,\"unlock\":true,\"result_gen\":true,\"default\":true}",
+
+  "dev_mode": false
+}

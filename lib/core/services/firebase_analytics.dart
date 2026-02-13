@@ -75,6 +75,11 @@ class AnalyticsService {
     _initialized = true;
   }
 
+  void logEventNormal(String name, Map<String, Object>? parameters) async {
+    if (!_initialized || kDebugMode) return;
+
+    _analytics.logEvent(name: name, parameters: parameters);
+  }
   // ================= SCREEN =================
 
   Future<void> logScreen(String screen) async {

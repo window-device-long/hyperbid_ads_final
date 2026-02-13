@@ -83,9 +83,6 @@ class _HyperbidNativeAdState extends State<HyperbidNativeAd>
 
   Widget _buildByState(NativeAdState state) {
     switch (state) {
-      case NativeAdState.loading:
-        return _buildLoading(const ValueKey('loading'));
-
       case NativeAdState.ready:
         return _buildNativeView(const ValueKey('native'));
 
@@ -142,7 +139,7 @@ class _HyperbidNativeAdState extends State<HyperbidNativeAd>
   void _reloadNative() {
     HyperbidAdsPlatform.instance.reloadNativeActive(_viewId);
 
-    _state.value = NativeAdState.loading;
+    _state.value = NativeAdState.ready;
   }
 
   /// ================= CLEANUP =================
