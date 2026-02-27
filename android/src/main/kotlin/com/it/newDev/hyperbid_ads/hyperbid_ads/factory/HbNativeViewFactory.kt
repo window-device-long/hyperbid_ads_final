@@ -1,6 +1,7 @@
 package com.it.newDev.hyperbid_ads.hyperbid_ads.factory
 
 import android.content.Context
+import android.app.Activity
 import com.it.newDev.hyperads.core.modals.enums.HBTypeAd
 import com.it.newDev.hyperbid_ads.hyperbid_ads.views.HbNativePlatformView
 import io.flutter.plugin.platform.PlatformView
@@ -8,7 +9,9 @@ import io.flutter.plugin.platform.PlatformViewFactory
 import io.flutter.plugin.common.StandardMessageCodec
 
 
-class HbNativeViewFactory : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+class HbNativeViewFactory(
+    private val activityProvider: () -> Activity?
+) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
 
     override fun create(
         context: Context,
@@ -16,6 +19,8 @@ class HbNativeViewFactory : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
         args: Any?
     ): PlatformView {
 
+        val activity = activityProvider()
+            ?: throw IllegalStateException("Activity null")
         val params = args as? Map<String, Any>
             ?: throw IllegalArgumentException("NativeAd params missing")
 
@@ -37,7 +42,8 @@ class HbNativeViewFactory : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
             name = group,
             placementId = placementId,
             type = typeAd,
-            args = params
+            args = params,
+            activity = activity
         )
     }
 }

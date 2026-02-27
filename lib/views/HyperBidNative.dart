@@ -48,6 +48,30 @@ class _HyperbidNativeAdState extends State<HyperbidNativeAd>
     );
 
     _state = NativeAdStateStore.instance.watch(_viewId);
+    initListener(); // 🔥 BẮT BUỘC
+  }
+
+  static const EventChannel _lifecycleChannel = EventChannel(
+    'hyperbid_ads/lifecycle',
+  );
+
+  void initListener() {
+    _lifecycleChannel.receiveBroadcastStream().listen((event) {
+      if (event == null) return;
+
+      final type = event['type'];
+
+      if (type == 'native_state') {
+        final viewId = event['viewId'];
+        final state = event['state'];
+
+        if (state == 'READY') {
+          NativeAdStateStore.instance.setReady(viewId);
+        } else if (state == 'FAILED') {
+          NativeAdStateStore.instance.setFailed(viewId);
+        }
+      }
+    });
   }
 
   @override
@@ -56,26 +80,26 @@ class _HyperbidNativeAdState extends State<HyperbidNativeAd>
 
     if (!_allowShow) return const SizedBox.shrink();
 
-    return ValueListenableBuilder<NativeAdState>(
-      valueListenable: _state,
-      builder: (_, state, __) {
-        return AnimatedSize(
-          duration: const Duration(milliseconds: 280),
-          curve: Curves.easeInOut,
-          alignment: Alignment.topCenter,
-          child: SizedBox(
-            width: widget.typeAd.width,
-            height: state == NativeAdState.failed ? 0 : widget.typeAd.height,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 320),
-              switchInCurve: Curves.easeOutCubic,
-              switchOutCurve: Curves.easeInCubic,
-              transitionBuilder: _slideTransition,
-              child: _buildByState(state),
-            ),
-          ),
-        );
-      },
+    // Kiểm tra trạng thái và chỉ build lại khi cần thiết
+    if (_state.value == NativeAdState.failed) {
+      return const SizedBox.shrink();
+    }
+
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeInOut,
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        width: widget.typeAd.width,
+        height: _state.value == NativeAdState.failed ? 0 : widget.typeAd.height,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 320),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: _slideTransition,
+          child: _buildByState(_state.value),
+        ),
+      ),
     );
   }
 
@@ -131,15 +155,18 @@ class _HyperbidNativeAdState extends State<HyperbidNativeAd>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    if (_state.value == NativeAdState.failed) {
+    // Kiểm tra xem quảng cáo đã tải chưa, và chỉ reload khi quảng cáo thất bại
+    if (_state.value == NativeAdState.failed && !_allowShow) {
       _reloadNative();
     }
   }
 
   void _reloadNative() {
-    HyperbidAdsPlatform.instance.reloadNativeActive(_viewId);
-
-    _state.value = NativeAdState.ready;
+    // Chỉ reload nếu trạng thái quảng cáo là thất bại
+    if (_state.value == NativeAdState.failed) {
+      HyperbidAdsPlatform.instance.reloadNativeActive(_viewId);
+      _state.value = NativeAdState.ready;
+    }
   }
 
   /// ================= CLEANUP =================

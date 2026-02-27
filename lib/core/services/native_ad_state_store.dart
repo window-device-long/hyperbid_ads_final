@@ -25,4 +25,12 @@ class NativeAdStateStore {
   void dispose(String viewId) {
     _states.remove(viewId)?.dispose();
   }
+
+  void setReady(String viewId) {
+    watch(viewId).value = NativeAdState.ready;
+  }
+
+  void setFailed(String viewId) {
+    watch(viewId).value = NativeAdState.failed;
+  }
 }

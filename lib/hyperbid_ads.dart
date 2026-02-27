@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -6,7 +7,7 @@ import 'package:flutter/foundation.dart';
 
 import 'channel/HyperbidAdsChannels.dart';
 import 'channel/hyperbid_ads_platform_interface.dart';
-import 'channel/revenue_handler.dart';
+import 'core/modals/ad_revenue_modal.dart';
 import 'core/modals/hb_sdk_state.dart';
 import 'core/services/firebase_analytics.dart';
 import 'core/services/firebase_database_service.dart';
@@ -27,6 +28,7 @@ class HyperbidAds {
 
   static StreamSubscription? _lifecycleSub;
   static Stream<Map<String, dynamic>>? _lifecycleStream;
+
   static Stream<Map<String, dynamic>> get lifecycleStream {
     _lifecycleStream ??= HyperbidAdsChannels.lifecycle
         .receiveBroadcastStream()
@@ -39,6 +41,21 @@ class HyperbidAds {
   static bool get isReady => _state == HBSDKState.sdkInitialized;
 
   static Object? get lastError => _lastError;
+
+  // ================= SERVICES =================
+
+  static final AnalyticsService analytics = AnalyticsService();
+  static final RemoteConfigService remote = RemoteConfigService();
+  static final FirebaseRestoreService database = FirebaseRestoreService();
+  static final NotificationService notification = NotificationService();
+
+  static AnalyticsService get analyticsService => analytics;
+
+  static RemoteConfigService get remoteConfigService => remote;
+
+  static FirebaseRestoreService get databaseService => database;
+
+  static NotificationService get notificationService => notification;
 
   // ================= INIT =================
 
@@ -165,17 +182,15 @@ class HyperbidAds {
   // ================= LIFECYCLE =================
 
   static void _bindLifecycle() {
-    print("Bind lifecycle called");
-
     _lifecycleSub ??= lifecycleStream.listen(
-      _handleEvent,
+      handleEvent,
       onError: (_) {
         debugPrint('❌ Failed to handle lifecycle event');
       },
     );
   }
 
-  static void _handleEvent(Map<String, dynamic> event) {
+  static void handleEvent(Map<String, dynamic> event) {
     switch (event['type']) {
       case 'interstitial_hidden':
         _interstitialCompleter?.complete();
@@ -196,10 +211,23 @@ class HyperbidAds {
         break;
 
       case 'revenue':
-        final raw = event['data'];
-        if (raw is Map<String, dynamic>) {
-          AdRevenueHandler.handle(raw);
-        }
+        final raw = event['data'].toString();
+        final data = jsonDecode(raw) as Map<String, dynamic>;
+
+        analytics.logAdImpression(
+          value: data['revenue'],
+          currency: data['currency'] ?? 'USD',
+          adType: data['ad_type'] ?? 'unknown',
+          placement: data['mediation_placement_id'] ?? '',
+          network: data['network_name'] ?? '',
+          platform: data['ad_platform'] ?? 'android',
+          modal: AdRevenueModel.fromJson(data),
+          platforms: const [
+            AnalyticsPlatform.firebase,
+            AnalyticsPlatform.solar,
+            AnalyticsPlatform.adjust,
+          ],
+        );
         break;
     }
   }
@@ -281,13 +309,6 @@ class HyperbidAds {
     return HyperbidAdsPlatform.instance.showAppOpen();
   }
 
-  // ================= SERVICES =================
-
-  final analytics = AnalyticsService();
-  final remote = RemoteConfigService();
-  final database = FirebaseRestoreService();
-  final notification = NotificationService();
-
   Future<void> _initCrashlytics({required bool sandbox}) async {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
       !sandbox,
@@ -304,6 +325,7 @@ class HyperbidAds {
 
 class HyperbidAdRegistry {
   HyperbidAdRegistry._();
+
   static final instance = HyperbidAdRegistry._();
 
   final Map<String, int> _attachedViews = {};

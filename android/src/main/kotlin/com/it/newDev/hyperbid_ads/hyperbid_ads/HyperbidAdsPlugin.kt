@@ -71,6 +71,7 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 HBAdsManager.setLifecycleListener { event ->
                     lifecycleSink?.success(event)
                 }
+                HBAdsManager.attachRevenueListener()
 
             }
 
@@ -79,9 +80,9 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 HBAdsManager.setLifecycleListener {
 
                 }
+                HBAdsManager.detachRevenueListener()
             }
         })
-
 
 
 
@@ -94,7 +95,7 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
         binding.platformViewRegistry.registerViewFactory(
             "hyperbid_ads/native",
-            HbNativeViewFactory()
+            HbNativeViewFactory { activity }
         )
 
         appStateNotifier = AppStateNotifier(binding.binaryMessenger)
@@ -271,9 +272,6 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
         lifecycleSink?.success(map)
     }
-
-
-
 
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {

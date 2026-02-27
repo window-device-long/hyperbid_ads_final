@@ -2,6 +2,7 @@ package com.it.newDev.hyperbid_ads.hyperbid_ads.views
 
 import android.content.Context
 import android.util.Log
+import android.app.Activity
 import android.view.View
 import android.widget.FrameLayout
 import com.it.newDev.hyperads.core.interfaces.NativeAdStateListener
@@ -16,6 +17,7 @@ import io.flutter.plugin.platform.PlatformView
 class HbNativePlatformView(
     context: Context,
     viewId: String?,
+    private val activity: Activity,
     name: String,
     placementId: String,
     type: HBTypeAd,
@@ -27,8 +29,6 @@ class HbNativePlatformView(
     private var _viewId: String? = null
 
     init {
-        val activity = HyperbidAdsPlugin.activity
-            ?: throw IllegalStateException("Activity null")
 
         val adUnit = HBAdUnit(
             name = args["group"] as String,

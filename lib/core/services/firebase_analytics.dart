@@ -72,14 +72,19 @@ class AnalyticsService {
       _solarReady = true;
     }
 
+    if (!PreferencesService.instance.getBool("already_opened")) {
+      _analytics.logEvent(name: "version_${_appVersion}_first_open");
+      PreferencesService.instance.setBool("already_opened", true);
+    }
     _initialized = true;
   }
 
   void logEventNormal(String name, Map<String, Object>? parameters) async {
-    if (!_initialized || kDebugMode) return;
+    if (!_initialized) return;
 
     _analytics.logEvent(name: name, parameters: parameters);
   }
+
   // ================= SCREEN =================
 
   Future<void> logScreen(String screen) async {
@@ -104,7 +109,7 @@ class AnalyticsService {
       AnalyticsPlatform.solar,
     ],
   }) async {
-    if (!_initialized || kDebugMode) return;
+    if (!_initialized) return;
     for (final p in platforms) {
       switch (p) {
         case AnalyticsPlatform.firebase:
@@ -124,17 +129,22 @@ class AnalyticsService {
     try {
       String? keyShow = {
         true: "_show_",
-        false: "_show_first_time",
-      }[PreferencesService.instance.getBool("show_first_time")];
+        false: "_first_open_show_",
+      }[PreferencesService.instance.getBool("show_first_time_${modal.adType}")];
 
-      await _analytics.logEvent(
+      PreferencesService.instance.setBool(
+        "show_first_time_${modal.adType}",
+        true,
+      );
+
+      _analytics.logEvent(
         name: "version_$_appVersion$keyShow${modal.adType}",
         parameters: modal.toJsonFirebase()?.map(
           (k, v) => MapEntry(k, v as Object),
         ),
       );
 
-      await _analytics.logAdImpression(
+      _analytics.logAdImpression(
         value: modal.revenue,
         currency: modal.currency,
         adFormat: modal.adFormat,
@@ -142,6 +152,8 @@ class AnalyticsService {
         adSource: modal.networkName,
         adUnitName: modal.mediationPlacementId,
       );
+
+      debugPrint("[Analytics] Firebase ad_impression: $modal");
     } catch (e) {
       debugPrint("[Analytics] Firebase ad_impression failed: $e");
     }
