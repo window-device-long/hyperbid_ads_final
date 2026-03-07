@@ -57,5 +57,4 @@ abstract class HyperbidAdsPlatform extends PlatformInterface {
   Future<void> reloadNativeActive(String viewId);
 
   // ================= Lifecycle =================
-  Stream<Map<String, dynamic>> get lifecycleStream;
 }

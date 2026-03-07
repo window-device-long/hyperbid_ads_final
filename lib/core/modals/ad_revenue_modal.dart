@@ -87,17 +87,17 @@ class AdRevenueModel {
     );
   }
 
-  Map<String, dynamic>? toJsonFirebase() {
+  Map<String, Object>? toJsonFirebase() {
     return {
-      'mediation_placement_id': mediationPlacementId,
+      'mediation_placement_id': mediationPlacementId ?? "",
       'ad_format': adFormat,
       'ad_type': adType,
       'revenue': revenue,
       'revenue_precision': revenuePrecision,
       'currency': currency,
-      'country': country,
-      'network_name': networkName,
-      'mediation_name': mediationName,
+      'country': country ?? "",
+      'network_name': networkName ?? "",
+      'mediation_name': mediationName ?? "",
       'ad_platform': adPlatform,
     };
   }

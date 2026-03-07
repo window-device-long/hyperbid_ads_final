@@ -12,6 +12,7 @@ import 'core/modals/hb_sdk_state.dart';
 import 'core/services/firebase_analytics.dart';
 import 'core/services/firebase_database_service.dart';
 import 'core/services/firebase_remote_service.dart';
+import 'core/services/native_ad_state_store.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/wrapper/AdsRemoteConfig.dart';
 
@@ -120,15 +121,13 @@ class HyperbidAds {
         );
       });
 
+      _bindLifecycle();
+
       // 7️⃣ Analytics / Adjust / Solar (background)
-      unawaited(
-        measure('AnalyticsService.init (bg)', () {
-          return analytics.init(
-            sandbox: sandbox,
-            adjustKey: adjustKey,
-            solarKey: solarKey,
-          );
-        }),
+      await analytics.init(
+        sandbox: sandbox,
+        adjustKey: adjustKey,
+        solarKey: solarKey,
       );
 
       // 4️⃣ Remote Config (await vì có thể ảnh hưởng logic)
@@ -151,9 +150,6 @@ class HyperbidAds {
       );
 
       // 8️⃣ Bind lifecycle (nhẹ)
-      measure('Bind lifecycle', () async {
-        _bindLifecycle();
-      });
 
       _state = HBSDKState.sdkInitialized;
 
@@ -183,7 +179,12 @@ class HyperbidAds {
 
   static void _bindLifecycle() {
     _lifecycleSub ??= lifecycleStream.listen(
-      handleEvent,
+      (event) {
+        final map = Map<String, dynamic>.from(event);
+
+        NativeAdStateStore.instance.handleEvent(map);
+        handleEvent(map);
+      },
       onError: (_) {
         debugPrint('❌ Failed to handle lifecycle event');
       },
@@ -191,6 +192,7 @@ class HyperbidAds {
   }
 
   static void handleEvent(Map<String, dynamic> event) {
+    debugPrint('Lifecycle event: $event');
     switch (event['type']) {
       case 'interstitial_hidden':
         _interstitialCompleter?.complete();
@@ -213,6 +215,7 @@ class HyperbidAds {
       case 'revenue':
         final raw = event['data'].toString();
         final data = jsonDecode(raw) as Map<String, dynamic>;
+        debugPrint('💰 Revenue: $data');
 
         analytics.logAdImpression(
           value: data['revenue'],
@@ -222,11 +225,6 @@ class HyperbidAds {
           network: data['network_name'] ?? '',
           platform: data['ad_platform'] ?? 'android',
           modal: AdRevenueModel.fromJson(data),
-          platforms: const [
-            AnalyticsPlatform.firebase,
-            AnalyticsPlatform.solar,
-            AnalyticsPlatform.adjust,
-          ],
         );
         break;
     }

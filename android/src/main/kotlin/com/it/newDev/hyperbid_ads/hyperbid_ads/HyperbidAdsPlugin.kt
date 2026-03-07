@@ -19,9 +19,10 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import android.util.Log
 
 
-class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, EventChannel.StreamHandler  {
 
     private lateinit var commandChannel: MethodChannel
     private lateinit var lifecycleChannel: EventChannel
@@ -57,33 +58,15 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         context = binding.applicationContext
+        HBAdsManager.attachRevenueListener()
+
 
         commandChannel = MethodChannel(binding.binaryMessenger, "hyperbid_ads/command")
         lifecycleChannel = EventChannel(binding.binaryMessenger, "hyperbid_ads/lifecycle")
-        HBAdsManager.attachRevenueListener()
 
         commandChannel.setMethodCallHandler(this)
 
-        lifecycleChannel.setStreamHandler(object : EventChannel.StreamHandler {
-            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                lifecycleSink = events
-
-                HBAdsManager.setLifecycleListener { event ->
-                    lifecycleSink?.success(event)
-                }
-                HBAdsManager.attachRevenueListener()
-
-            }
-
-            override fun onCancel(arguments: Any?) {
-                lifecycleSink = null
-                HBAdsManager.setLifecycleListener {
-
-                }
-                HBAdsManager.detachRevenueListener()
-            }
-        })
-
+        lifecycleChannel.setStreamHandler(this)
 
 
 
@@ -100,6 +83,19 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
         appStateNotifier = AppStateNotifier(binding.binaryMessenger)
     }
+    override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink?) {
+        lifecycleSink = eventSink
+        HBAdsManager.setLifecycleListener { event ->
+
+            lifecycleSink?.success(event)
+        }
+    }
+
+    override fun onCancel(arguments: Any?) {
+        lifecycleSink = null
+        HBAdsManager.setLifecycleListener {}
+    }
+
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
@@ -277,7 +273,6 @@ class HyperbidAdsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         lifecycleSink = null
         commandChannel.setMethodCallHandler(null)
-        HBAdsManager.detachRevenueListener()
 
         appStateNotifier?.stop()
         appStateNotifier = null

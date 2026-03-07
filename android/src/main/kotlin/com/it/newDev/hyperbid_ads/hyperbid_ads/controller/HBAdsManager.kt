@@ -2,27 +2,54 @@ package com.it.newDev.hyperbid_ads.hyperbid_ads.controller
 
 import android.app.Activity
 import android.widget.FrameLayout
+import android.os.Handler
+import android.os.Looper
 import com.it.newDev.hyperads.core.HBAdsSDK
 import com.it.newDev.hyperads.core.interfaces.AdRevenueListener
 import com.it.newDev.hyperads.core.modals.entities.HBAdUnit
 import com.it.newDev.hyperads.core.provider.HBAdsAppOpenController
 import com.it.newDev.hyperads.core.provider.HBAdsInterstitialController
 import com.it.newDev.hyperads.core.provider.HBAdsRewardedController
+import android.util.Log
+
 
 object HBAdsManager {
 
     private var interstitialController: HBAdsInterstitialController? = null
     private var rewardController: HBAdsRewardedController? = null
 
+
     private var lifecycleEvent: ((Map<String, Any>) -> Unit)? = null
+    private val pendingEvents = mutableListOf<Map<String, Any>>()
 
-
-    fun setLifecycleListener(listener: (Map<String, Any>) -> Unit) {
+    fun setLifecycleListener(listener: ((Map<String, Any>) -> Unit)?) {
         lifecycleEvent = listener
+
+        if (listener != null) {
+            flushPendingEvents()
+        }
     }
 
     private fun emit(event: Map<String, Any>) {
-        lifecycleEvent?.invoke(event)
+        Handler(Looper.getMainLooper()).post {
+
+            if (lifecycleEvent == null) {
+                Log.e("HB_EVENT_FLOW", "BUFFER EVENT: $event")
+                pendingEvents.add(event)
+            } else {
+                Log.e("HB_EVENT_FLOW", "SEND EVENT: $event")
+                lifecycleEvent?.invoke(event)
+            }
+        }
+    }
+
+    private fun flushPendingEvents() {
+        lifecycleEvent?.let { listener ->
+            pendingEvents.forEach {
+                listener.invoke(it)
+            }
+            pendingEvents.clear()
+        }
     }
 
     var sdkRevenueListener = object : AdRevenueListener {

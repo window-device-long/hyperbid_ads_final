@@ -88,7 +88,7 @@ class AnalyticsService {
   // ================= SCREEN =================
 
   Future<void> logScreen(String screen) async {
-    if (!_initialized || kDebugMode) return;
+    if (!_initialized) return;
 
     await _analytics.logScreenView(screenName: screen, screenClass: screen);
   }
@@ -137,21 +137,23 @@ class AnalyticsService {
         true,
       );
 
-      _analytics.logEvent(
-        name: "version_$_appVersion$keyShow${modal.adType}",
-        parameters: modal.toJsonFirebase()?.map(
-          (k, v) => MapEntry(k, v as Object),
-        ),
+      await _analytics.logEvent(
+        name: "version_$_buildNumber$keyShow${modal.adType}",
+        parameters: modal.toJsonFirebase(),
       );
 
-      _analytics.logAdImpression(
-        value: modal.revenue,
-        currency: modal.currency,
-        adFormat: modal.adFormat,
-        adPlatform: modal.adPlatform,
-        adSource: modal.networkName,
-        adUnitName: modal.mediationPlacementId,
+      debugPrint(
+        "[Analytics] Firebase ad_impression: ${modal.toJsonFirebase()}",
       );
+
+      // _analytics.logAdImpression(
+      //   value: modal.revenue,
+      //   currency: modal.currency,
+      //   adFormat: modal.adFormat,
+      //   adPlatform: modal.adPlatform,
+      //   adSource: modal.networkName,
+      //   adUnitName: modal.mediationPlacementId,
+      // );
 
       debugPrint("[Analytics] Firebase ad_impression: $modal");
     } catch (e) {

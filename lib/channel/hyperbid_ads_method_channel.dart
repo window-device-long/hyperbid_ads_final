@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hyperbid_ads/channel/HyperbidAdsChannels.dart';
 
@@ -8,12 +7,7 @@ import 'hyperbid_ads_platform_interface.dart';
 
 /// An implementation of [HyperbidAdsPlatform] that uses method channels.
 class MethodChannelHyperbidAds extends HyperbidAdsPlatform {
-  @visibleForTesting
-  final MethodChannel methodChannel = const MethodChannel('hyperbid_ads');
-
   final MethodChannel _command = HyperbidAdsChannels.command;
-
-  final EventChannel _lifecycle = HyperbidAdsChannels.lifecycle;
 
   // ================= SDK =================
 
@@ -91,9 +85,4 @@ class MethodChannelHyperbidAds extends HyperbidAdsPlatform {
   }
 
   // ================= Lifecycle =================
-
-  @override
-  Stream<Map<String, dynamic>> get lifecycleStream => _lifecycle
-      .receiveBroadcastStream()
-      .map((event) => Map<String, dynamic>.from(event));
 }
