@@ -16,10 +16,16 @@ class _HomePageState extends State<HomePage> {
       body: ListView.builder(
         itemCount: 10,
         itemBuilder: (context, index) {
-          return HyperbidNativeAd(
-            group: "home_native_$index",
-            placementId: "kfc98a6c32d23a57",
-            typeAd: HBTypeAd.nativeSmall,
+          return Container(
+            height: 200,
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            color: Colors.grey[300],
+            child: HyperbidNativeAd(
+              group: "group1",
+              viewId: "native-$index",
+              placementId: "k5268a2bc6f7f3cc",
+              typeAd: HBTypeAd.nativeMedium,
+            ),
           );
         },
       ),

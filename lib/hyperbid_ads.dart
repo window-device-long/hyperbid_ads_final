@@ -12,6 +12,7 @@ import 'core/modals/hb_sdk_state.dart';
 import 'core/services/firebase_analytics.dart';
 import 'core/services/firebase_database_service.dart';
 import 'core/services/firebase_remote_service.dart';
+import 'core/services/local_data.dart';
 import 'core/services/native_ad_state_store.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/wrapper/AdsRemoteConfig.dart';
@@ -44,11 +45,12 @@ class HyperbidAds {
   static Object? get lastError => _lastError;
 
   // ================= SERVICES =================
+  static late AnalyticsService analytics;
+  static late RemoteConfigService remote;
 
-  static final AnalyticsService analytics = AnalyticsService();
-  static final RemoteConfigService remote = RemoteConfigService();
-  static final FirebaseRestoreService database = FirebaseRestoreService();
-  static final NotificationService notification = NotificationService();
+  static late FirebaseRestoreService database;
+
+  static late NotificationService notification;
 
   static AnalyticsService get analyticsService => analytics;
 
@@ -74,17 +76,21 @@ class HyperbidAds {
       return;
     }
 
+
+    PreferencesService.init();
     _state = HBSDKState.sdkInitializing;
     _lastError = null;
 
-    final totalWatch = Stopwatch()..start();
+    final totalWatch = Stopwatch()
+      ..start();
 
     void logStep(String msg) {
       debugPrint('[HyperbidInit] $msg');
     }
 
     Future<T> measure<T>(String name, Future<T> Function() action) async {
-      final sw = Stopwatch()..start();
+      final sw = Stopwatch()
+        ..start();
       logStep('▶️ START $name');
       final result = await action();
       sw.stop();
@@ -101,8 +107,8 @@ class HyperbidAds {
     try {
       // 1️⃣ Firebase init
       if (Firebase.apps.isEmpty) {
-        await measure('Firebase.initializeApp', () {
-          return Firebase.initializeApp(name: appName, options: firebase);
+        await measure('Firebase.initializeApp', () async {
+          return await Firebase.initializeApp(name: appName, options: firebase);
         });
       } else {
         logStep('ℹ️ Firebase already initialized');
@@ -122,6 +128,11 @@ class HyperbidAds {
       });
 
       _bindLifecycle();
+
+      analytics = AnalyticsService();
+      remote = RemoteConfigService();
+      database = FirebaseRestoreService();
+      notification = NotificationService();
 
       // 7️⃣ Analytics / Adjust / Solar (background)
       await analytics.init(
@@ -179,7 +190,7 @@ class HyperbidAds {
 
   static void _bindLifecycle() {
     _lifecycleSub ??= lifecycleStream.listen(
-      (event) {
+          (event) {
         final map = Map<String, dynamic>.from(event);
 
         NativeAdStateStore.instance.handleEvent(map);
@@ -319,6 +330,8 @@ class HyperbidAds {
       return true;
     };
   }
+
+
 }
 
 class HyperbidAdRegistry {

@@ -24,7 +24,7 @@ dependencies:
 
 
 #  Tracking user revenue
-  adjust_sdk: ^5.5.0
+  adjust_sdk: ^5.4.5
   se_flutter_sdk_us: ^1.5.7
   app_tracking_transparency: ^2.0.6+1
   firebase_analytics: ^12.1.1

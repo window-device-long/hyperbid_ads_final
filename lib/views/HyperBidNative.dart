@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hyperbid_ads/core/modals/hb_type_ad.dart';
@@ -70,21 +72,39 @@ class _HyperbidNativeAdState extends State<HyperbidNativeAd>
       return const SizedBox.shrink();
     }
 
-    return SizedBox(
-      width: widget.typeAd.width,
-      height: widget.typeAd.height,
-      child: AndroidView(
-        key: ValueKey(widget.viewId),
-        viewType: 'hyperbid_ads/native',
-        creationParams: {
-          'group': widget.group,
-          'placementId': widget.placementId,
-          'type': widget.typeAd.id,
-          'viewId': widget.viewId,
-        },
-        creationParamsCodec: const StandardMessageCodec(),
-      ),
-    );
+    if (Platform.isIOS) {
+      return SizedBox(
+        width: widget.typeAd.width,
+        height: widget.typeAd.height,
+        child: UiKitView(
+          key: ValueKey(widget.viewId),
+          viewType: 'hyperbid_ads/native',
+          creationParams: {
+            'group': widget.group,
+            'placementId': widget.placementId,
+            'type': widget.typeAd.id,
+            'viewId': widget.viewId,
+          },
+          creationParamsCodec: const StandardMessageCodec(),
+        ),
+      );
+    } else {
+      return SizedBox(
+        width: widget.typeAd.width,
+        height: widget.typeAd.height,
+        child: AndroidView(
+          key: ValueKey(widget.viewId),
+          viewType: 'hyperbid_ads/native',
+          creationParams: {
+            'group': widget.group,
+            'placementId': widget.placementId,
+            'type': widget.typeAd.id,
+            'viewId': widget.viewId,
+          },
+          creationParamsCodec: const StandardMessageCodec(),
+        ),
+      );
+    }
   }
 
   @override
