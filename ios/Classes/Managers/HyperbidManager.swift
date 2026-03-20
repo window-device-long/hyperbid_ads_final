@@ -9,7 +9,11 @@ import Foundation
 import MCSDK
 import Flutter
  
-class HyperbidManager: NSObject, MCInitDelegate {
+class HyperbidManager: NSObject, MCInitDelegate, MCMediationUpdateDelegate {
+    func didMediationUpdated(_ newAppSettings: [AnyHashable : Any]!, oldAppSettings: [AnyHashable : Any]!) {
+        print("HyperBid updated: ")
+    }
+    
     func didMediationInitFinished(_ successMediationIdList: [NSNumber]!, failedError: MCError!) {
         print("HyperBid init finished:")
     }
@@ -24,6 +28,9 @@ class HyperbidManager: NSObject, MCInitDelegate {
             
             return }
         
+        
+        
+        MCSDK.MCAPI.sharedInstance().setMediationUpdateDelegate(self)
     
         let config = MCInitConfig()
         config.appId = appID
@@ -32,7 +39,8 @@ class HyperbidManager: NSObject, MCInitDelegate {
         config.isPrivacySettingsEnabled = true
         
     
-        MCAPI.sharedInstance().initWith(config, delegate: self)
+        MCSDK.MCAPI.sharedInstance().initWith(config, delegate: self)
+
         
         
         result(true)
