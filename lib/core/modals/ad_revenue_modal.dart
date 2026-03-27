@@ -70,7 +70,7 @@ class AdRevenueModel {
       country: json['country'],
 
       networkName: json['network_name'],
-      networkFirmId: json['network_firm_id'] ?? 0,
+      networkFirmId: int.tryParse('${json['network_firm_id']}') ?? 0,
 
       mediationName: json['mediation_name'],
       mediationSecretId: json['mediation_secret_id'] ?? 0,

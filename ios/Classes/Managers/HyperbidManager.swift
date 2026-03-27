@@ -9,13 +9,54 @@ import Foundation
 import MCSDK
 import Flutter
  
+
+   
 class HyperbidManager: NSObject, MCInitDelegate, MCMediationUpdateDelegate {
+    private var initResult: FlutterResult?
+    private(set) var state: HyperbidInitState = .idle
+
+    private var pendingTasks: [() -> Void] = []
+
     func didMediationUpdated(_ newAppSettings: [AnyHashable : Any]!, oldAppSettings: [AnyHashable : Any]!) {
         print("HyperBid updated: ")
     }
     
     func didMediationInitFinished(_ successMediationIdList: [NSNumber]!, failedError: MCError!) {
         print("HyperBid init finished:")
+        if failedError == nil {
+               state = .success
+               initResult?(true)
+
+               // 🔥 chạy tất cả task đang chờ
+               pendingTasks.forEach { $0() }
+               pendingTasks.removeAll()
+
+           } else {
+               state = .failed
+               initResult?(false)
+           }
+        self.initResult = nil
+    }
+    
+    
+    func runWhenReady(_ task: @escaping () -> Void) {
+
+        switch state {
+
+        case .success:
+            task()
+
+        case .initializing:
+            print("⏳ SDK chưa xong → add vào queue")
+            pendingTasks.append(task)
+
+        case .idle:
+            print("⚠️ SDK chưa init")
+            pendingTasks.append(task)
+
+        case .failed:
+            print("❌ SDK init failed → không chạy")
+        }
     }
     
     static let shared = HyperbidManager()
@@ -26,24 +67,30 @@ class HyperbidManager: NSObject, MCInitDelegate, MCMediationUpdateDelegate {
         else {
             result(false)
             
-            return }
-        
-        
-        
+            return
+        }
+        self.initResult = result   // 🔥 giữ lại
+
+        if state == .success {
+                result(true)
+                return
+            }
+        state = .initializing
+        initResult = result
+
         MCSDK.MCAPI.sharedInstance().setMediationUpdateDelegate(self)
-    
-        let config = MCInitConfig()
+
+        let config = MCSDK.MCInitConfig()
         config.appId = appID
         config.appKey = appKey
-        
+        config.timeoutForUseDefaultStrategy = 0
         config.isPrivacySettingsEnabled = true
-        
-    
-        MCSDK.MCAPI.sharedInstance().initWith(config, delegate: self)
 
-        
-        
-        result(true)
-    }
+        DispatchQueue.main.async {
+            MCSDK.MCAPI.sharedInstance().initWith(config, delegate: self)
+        }
+
+    
+        }
     
 }

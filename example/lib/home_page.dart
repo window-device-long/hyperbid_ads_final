@@ -13,21 +13,17 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          return Container(
-            height: 200,
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            color: Colors.grey[300],
-            child: HyperbidNativeAd(
-              group: "group1",
-              viewId: "native-$index",
-              placementId: "k5268a2bc6f7f3cc",
-              typeAd: HBTypeAd.nativeMedium,
-            ),
-          );
-        },
+      body: Column(
+        children: [
+          SizedBox(height: 300),
+
+          HyperbidNativeAd(
+            group: "group1",
+            viewId: "native-1",
+            placementId: "k5268a2bc6f7f3cc",
+            typeAd: HBTypeAd.nativeMedium,
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -76,27 +77,25 @@ class HyperbidAds {
       return;
     }
 
-
     PreferencesService.init();
     _state = HBSDKState.sdkInitializing;
     _lastError = null;
 
-    final totalWatch = Stopwatch()
-      ..start();
+    final totalWatch = Stopwatch()..start();
 
     void logStep(String msg) {
       debugPrint('[HyperbidInit] $msg');
     }
 
     Future<T> measure<T>(String name, Future<T> Function() action) async {
-      final sw = Stopwatch()
-        ..start();
+      final sw = Stopwatch()..start();
       logStep('▶️ START $name');
       final result = await action();
       sw.stop();
       logStep('✅ DONE  $name (${sw.elapsedMilliseconds} ms)');
 
-      if (name.contains("RemoteConfigService.init")) {
+      if (name.contains("RemoteConfigService.init") &&
+          _state == HBSDKState.sdkInitialized) {
         analytics.logEventNormal("RemoteConfigService.init", {
           "time_init": sw.elapsedMilliseconds.toString(),
         });
@@ -147,18 +146,16 @@ class HyperbidAds {
       });
 
       // 5️⃣ Database (background)
-      unawaited(
-        measure('FirebaseRestoreService.init (bg)', () {
-          return database.init();
-        }),
-      );
+
+      measure('FirebaseRestoreService.init (bg)', () {
+        return database.init();
+      });
 
       // 6️⃣ Notification (background)
-      unawaited(
-        measure('NotificationService.init (bg)', () {
-          return notification.init();
-        }),
-      );
+
+      measure('NotificationService.init (bg)', () {
+        return notification.init();
+      });
 
       // 8️⃣ Bind lifecycle (nhẹ)
 
@@ -190,14 +187,14 @@ class HyperbidAds {
 
   static void _bindLifecycle() {
     _lifecycleSub ??= lifecycleStream.listen(
-          (event) {
+      (event) {
         final map = Map<String, dynamic>.from(event);
 
         NativeAdStateStore.instance.handleEvent(map);
         handleEvent(map);
       },
-      onError: (_) {
-        debugPrint('❌ Failed to handle lifecycle event');
+      onError: (e) {
+        debugPrint('❌ Failed to handle lifecycle event:$e');
       },
     );
   }
@@ -224,8 +221,10 @@ class HyperbidAds {
         break;
 
       case 'revenue':
-        final raw = event['data'].toString();
-        final data = jsonDecode(raw) as Map<String, dynamic>;
+        final data = Map<String, dynamic>.from(event['data']);
+        // final data = Platform.isAndroid
+        //     ? jsonDecode(raw) as Map<String, dynamic>
+        //     : Map<String, dynamic>.from(jsonDecode(raw));
         debugPrint('💰 Revenue: $data');
 
         analytics.logAdImpression(
@@ -330,8 +329,6 @@ class HyperbidAds {
       return true;
     };
   }
-
-
 }
 
 class HyperbidAdRegistry {

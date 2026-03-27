@@ -20,7 +20,7 @@ A new Flutter project.
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
-s.dependency 'HyperbidToolsMCSDK', '3.7.10'
+s.dependency 'HyperbidToolsMCSDK', '3.6.16'
 s.dependency 'MCSDKMaterialPlugin', '1.1.0'
 s.dependency 'HyperbidToolsMCToponAdapter', '6.5.34.0'
 s.dependency 'HyperbidToolsMCMaxAdapter', '13.5.0.1'
