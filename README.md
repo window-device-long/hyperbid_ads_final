@@ -161,10 +161,10 @@ HyperbidAds.onAdClosed.listen((event) {
 
 ### Links and Documentation
 
-- **Hyperbid SDK Documentation**: [Hyperbid SDK Docs](https://docs.hyperbid.com)
+- **Hyperbid SDK Documentation**: [Hyperbid SDK Docs](https://help.hyperbid.com/docs/Introduction-to-HyperBid-Tools)
 - **Flutter Documentation**: [Flutter Docs](https://flutter.dev/docs)
-- **Android SDK**: [Hyperbid Android SDK Docs](https://github.com/Hyperbid/AndroidSDK)
-- **iOS SDK**: [Hyperbid iOS SDK Docs](https://github.com/Hyperbid/iOSSDK)
+- **Android DEMO**: [Hyperbid Android SDK Docs](https://github.com/hyperbidteam)
+- **iOS DEMO**: [Hyperbid iOS SDK Docs](https://github.com/hyperbidteam)
 
 ### Troubleshooting
 
@@ -177,10 +177,4 @@ HyperbidAds.onAdClosed.listen((event) {
 For more detailed guides and examples, please visit the official documentation or refer to the links above.
 '''
 
-# Save this content to a text file.
-file_path = '/mnt/data/README_hyperbid_ads.txt'
-
-with open(file_path, 'w') as f:
-f.write(readme_content)
-
-file_path  # Returning the path to the saved file for download
+#
